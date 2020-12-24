@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="./static/common/layui/css/layui.css">
+    <link rel="stylesheet" href="./static/admin/css/style.css">
+    <script src="./static/common/layui/layui.js"></script>
+    <script src="./static/common/jquery-3.3.1.min.js"></script>
+    <script src="./static/common/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <!--顶栏-->
+    <header>
+        <h1 v-text="webname"></h1>
+        <div class="breadcrumb">
+            <i class="layui-icon">&#xe715;</i>
+            <ul>
+                <li v-for="vo in address">
+                    <a  v-text="vo.name" :href="vo.url" ></a> <span>/</span>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="main" id="app">
+        <!--左栏-->
+        <div class="left">
+            <ul class="cl" >
+                <!--顶级分类-->
+                <li v-for="vo,index in menu" :class="{hidden:vo.hidden}">
+                    <a href="javascript:;"  :class="{active:vo.active}"  @click="onActive(index)">
+                        <i class="layui-icon" v-html="vo.icon"></i>
+                        <span v-text="vo.name"></span>
+                        <i class="layui-icon arrow" v-show="vo.url.length==0">&#xe61a;</i> <i v-show="vo.active" class="layui-icon active">&#xe623;</i>
+                    </a>
+                    <!--子级分类-->
+                    <div v-for="vo2,index2 in vo.list">
+                        <a href="javascript:;" :class="{active:vo2.active}" @click="onActive(index,index2)" v-text="vo2.name"></a>
+                        <i v-show="vo2.active" class="layui-icon active">&#xe623;</i>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!--右侧-->
+        <div class="right">
+
+
+<!--            <div class="layui-row">-->
+<!--                <div class="layui-col-lg8">-->
+<!--                    <a href="?/admin/user/index/connect/qq.html" class="layui-btn">QQ</a>-->
+
+<!--                    <a href="?/admin/user/index/connect/weibo.html" class="layui-btn">微博</a>-->
+<!--                    <a href="?/admin/user/index/connect/weixin.html" class="layui-btn">微信</a>-->
+<!--                    <a href="?/admin/user/index/connect/alipay.html" class="layui-btn">支付宝</a>-->
+<!--                    <a href="?/admin/user/index/connect/xcx.html" class="layui-btn">小程序</a>-->
+<!--                </div>-->
+
+<!--                <div  class="layui-col-lg4" style="text-align: right">-->
+
+                    <div class="layui-input-inline" style="width: 300px">
+                        <input type="text" name="k" value="" placeholder="手机/用户名/邮箱/昵称"  id="name" class="layui-input key">
+                    </div>
+                    <button type="button" id="Fuzzy" class="layui-btn sou">搜索</button>
+            <table class="layui-hide" id="test"></table>
+
+        </div>
+
+            </div>
+
+
+
+
+
+</div>
+    </div>
+</div>
+<script src="./static/admin/js/config.js"></script>
+<script src="./static/admin/js/script.js"></script>
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        console.log(table.field);
+        table.render({
+            elem: '#test'
+            ,url:'/User/FindAll'
+            ,method:'post'
+            //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,cols: [[
+                {field:'id', width:100, title: 'ID', sort: true}
+                ,{field:'username', width:100, title: '用户名'}
+                ,{field:'super', width:100, title: '管理员'}
+                ,{field:'status', width:100, title: '状态'}
+                ,{field:'create_time', title: '创建时间', width: 150, minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'update_time', title: '更新时间', width: 150}
+                ,{field:'delete_time', title: '删除时间', width: 150}
+
+            ]]
+        });
+    });
+    $("#Fuzzy").click(function(){
+        layui.use('table', function(){
+            var table = layui.table;
+            var name =  $("#name").val();
+
+            if (name == null || name == undefined || name == '' || name =='<empty string>') {
+
+                console.log(name)
+            }else
+                {
+                    table.render({
+                        elem: '#test'
+                        , url: '/User/Fuzzy?Keyword='+name
+                        ,method: 'post'
+                        , cellMinWidth: 100 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                        , cols: [[
+                            {field: 'id', width: 80, title: 'ID', sort: true}
+                            , {field: 'username', width: 100, title: '用户名'}
+                            , {field: 'super', width: 100, title: '管理员', sort: true}
+                            , {field: 'status', width: 80, title: '状态'}
+                            , {field: 'create_time', title: '创建时间', width: 100, minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                            , {field: 'update_time', title: '更新时间', width: 150, sort: true}
+                            , {field: 'delete_time', title: '删除时间', width: 150, sort: true}
+
+                        ]]
+                    });
+
+                }});
+    });
+
+</script>
+</body>
+</html>
